@@ -1,3 +1,9 @@
+import ImageGalleryItem from './ImageGalleryItem';
+
 export default function ImageGallery() {
-  return <p>ImageGallery</p>;
+  return (
+    <ul className="ImageGallery">
+      <ImageGalleryItem />
+    </ul>
+  );
 }
