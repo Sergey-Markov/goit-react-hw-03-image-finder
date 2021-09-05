@@ -1,14 +1,9 @@
-export default function Button() {
+export default function Button({ onClick }) {
   return (
-    <div class="more">
-      <button type="text" class="more-loadBtn">
+    <div className="more">
+      <button type="text" className="more-loadBtn" onClick={onClick}>
         Load more
       </button>
     </div>
   );
 }
-
-window.scrollTo({
-  top: document.documentElement.scrollHeight,
-  behavior: 'smooth',
-});
