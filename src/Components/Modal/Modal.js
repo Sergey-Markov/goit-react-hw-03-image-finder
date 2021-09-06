@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function Modal({ picture, onCloseModal }) {
   return (
     <div className="Overlay" onClick={onCloseModal}>
@@ -7,3 +9,8 @@ export default function Modal({ picture, onCloseModal }) {
     </div>
   );
 }
+
+Modal.propTypes = {
+  picture: PropTypes.object.isRequired,
+  onCloseModal: PropTypes.func,
+};

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 export default function ImageGalleryItem({ pictures, onClick }) {
   return pictures.map(picture => {
     const { id, webformatURL, tags } = picture;
@@ -13,3 +14,8 @@ export default function ImageGalleryItem({ pictures, onClick }) {
     );
   });
 }
+
+ImageGalleryItem.propTypes = {
+  pictures: PropTypes.array.isRequired,
+  onClick: PropTypes.func,
+};

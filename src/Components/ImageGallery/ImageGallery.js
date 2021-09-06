@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import ImageGalleryItem from './ImageGalleryItem';
 import apiService from '../Service/Service';
@@ -149,3 +150,7 @@ export default class ImageGallery extends Component {
     }
   }
 }
+
+ImageGallery.propTypes = {
+  imageName: PropTypes.string.isRequired,
+};

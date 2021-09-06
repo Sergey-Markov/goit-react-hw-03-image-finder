@@ -10,20 +10,3 @@ export default function apiService(imageSearch, page) {
     return Promise.reject(new Error('Это ошибка, её нужно как-то решить'));
   });
 }
-
-// function nextPage() {
-//   this.setState(prevState => ({
-//     numberOfPage: (prevState.numberOfPage += 1),
-//   }));
-// }
-// function ressetPage() {
-//   this.setState({ numberOfPage: 1 });
-// }
-
-//  get query(){
-//      return this.state.imageSearch;
-//  }
-//  set query(newQuery){
-//      this.state.imageSearch = newQuery;
-
-//  }
