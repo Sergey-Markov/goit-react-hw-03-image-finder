@@ -1,8 +1,10 @@
 import { Component } from 'react';
+import { toast } from 'react-toastify';
 import ImageGalleryItem from './ImageGalleryItem';
 import apiService from '../Service/Service';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
+import Loader from 'react-loader-spinner';
 
 export default class ImageGallery extends Component {
   state = {
@@ -11,32 +13,42 @@ export default class ImageGallery extends Component {
     picturesData: [],
     isOpenModal: false,
     picture: '',
-  };
-
-  avtoScroll = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
+    status: 'idle',
   };
 
   async componentDidUpdate(prevProps, prevState) {
+    const { page } = this.state;
     if (prevProps.imageName !== this.props.imageName) {
+      this.setState({ status: 'pending' });
       await this.loadNewPictures();
     }
-    if (prevState.page !== this.state.page && this.state.page > 1) {
+    if (prevState.page !== page && page > 1) {
+      this.setState({ status: 'pending-nextBlock' });
       await this.loadMorePictures();
     }
   }
+  componentDidMount() {
+    window.addEventListener('keydown', this.onCloseModal);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onCloseModal);
+  }
+
+  onCloseModal = e => {
+    if (e.code === 'Escape' || e.currentTarget === e.target) {
+      this.setState({ isOpenModal: false });
+    }
+  };
 
   async loadNewPictures() {
     this.ressetPage();
     await apiService(this.props.imageName, this.state.page)
       .then(pictures => {
         // console.log(pictures.hits);
-        this.setState({ picturesData: pictures.hits });
+        this.setState({ picturesData: pictures.hits, status: 'resolved' });
       })
-      .catch(error => this.setState({ error }));
+      .catch(error => this.setState({ error, status: 'rejected' }));
     this.avtoScroll();
   }
 
@@ -46,16 +58,14 @@ export default class ImageGallery extends Component {
         // console.log(pictures.hits);
         this.setState(prevState => ({
           picturesData: [...prevState.picturesData, ...pictures.hits],
+          status: 'resolved',
         }));
       })
-      .catch(error => this.setState({ error }));
+      .catch(error => this.setState({ error, status: 'rejected' }));
     this.avtoScroll();
   }
   onModalOpen = picture => {
     this.setState({ isOpenModal: true, picture: picture });
-  };
-  onCloseModal = () => {
-    this.setState({ isOpenModal: false });
   };
 
   nextPage = () => {
@@ -66,27 +76,76 @@ export default class ImageGallery extends Component {
   ressetPage() {
     this.setState({ page: 1 });
   }
+  avtoScroll = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
 
   render() {
-    const { picturesData, picture, isOpenModal } = this.state;
-    return (
-      <>
+    const { error, status, picturesData, picture, isOpenModal } = this.state;
+
+    if (status === 'idle') {
+      return (
         <p className="notifyText-onStart">
           Please! Enter word for searching images
         </p>
-        <ul className="ImageGallery">
-          {picturesData.length > 0 && (
+      );
+    }
+
+    if (status === 'pending') {
+      return (
+        <Loader
+          className="loader"
+          type="Grid"
+          color="blue"
+          height={100}
+          width={100}
+          timeout={4000}
+        />
+      );
+    }
+
+    if (status === 'pending-nextBlock') {
+      return (
+        <>
+          <ul className="ImageGallery">
             <ImageGalleryItem
               pictures={picturesData}
               onClick={this.onModalOpen}
             />
-          )}
-          {picturesData.length > 1 && <Button onClick={this.nextPage} />}
+          </ul>
+          <Loader
+            className="loader"
+            type="Grid"
+            color="blue"
+            height={100}
+            width={100}
+            timeout={4000}
+          />
+        </>
+      );
+    }
+
+    if (status === 'rejected') {
+      return toast.error(error.message);
+    }
+    if (status === 'resolved') {
+      return (
+        <>
+          <ul className="ImageGallery">
+            <ImageGalleryItem
+              pictures={picturesData}
+              onClick={this.onModalOpen}
+            />
+          </ul>
           {isOpenModal && (
             <Modal picture={picture} onCloseModal={this.onCloseModal} />
           )}
-        </ul>
-      </>
-    );
+          {picturesData.length > 0 && <Button onClick={this.nextPage} />}
+        </>
+      );
+    }
   }
 }

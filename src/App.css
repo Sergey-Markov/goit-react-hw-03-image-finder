@@ -216,3 +216,8 @@ img {
 .more-loadBtn:focus {
   background-color: #303f9f;
 }
+
+/* Loader styles */
+.loader {
+  text-align: center;
+}
