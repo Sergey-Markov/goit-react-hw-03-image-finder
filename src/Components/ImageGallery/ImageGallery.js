@@ -20,10 +20,10 @@ export default class ImageGallery extends Component {
   async componentDidUpdate(prevProps, prevState) {
     const { page } = this.state;
     if (prevProps.imageName !== this.props.imageName) {
-      this.setState({ status: 'pending' });
+      this.setState({ status: 'pending', page: 1, picturesData: [] });
       await this.loadNewPictures();
     }
-    if (prevState.page !== page && page > 1) {
+    if (prevState.page !== page && this.state.page > 1) {
       this.setState({ status: 'pending-nextBlock' });
       await this.loadMorePictures();
     }
@@ -43,10 +43,10 @@ export default class ImageGallery extends Component {
   };
 
   async loadNewPictures() {
-    this.ressetPage();
     await apiService(this.props.imageName, this.state.page)
       .then(pictures => {
-        // console.log(pictures.hits);
+        console.log(`работает newSearch`);
+
         this.setState({ picturesData: pictures.hits, status: 'resolved' });
       })
       .catch(error => this.setState({ error, status: 'rejected' }));
@@ -56,7 +56,7 @@ export default class ImageGallery extends Component {
   async loadMorePictures() {
     await apiService(this.props.imageName, this.state.page)
       .then(pictures => {
-        // console.log(pictures.hits);
+        console.log(`работает лоадМор`);
         this.setState(prevState => ({
           picturesData: [...prevState.picturesData, ...pictures.hits],
           status: 'resolved',
@@ -74,9 +74,9 @@ export default class ImageGallery extends Component {
       page: (prevState.page += 1),
     }));
   };
-  ressetPage() {
-    this.setState({ page: 1 });
-  }
+  // ressetPage() {
+  //   this.setState({ page: 1 });
+  // }
   avtoScroll = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
