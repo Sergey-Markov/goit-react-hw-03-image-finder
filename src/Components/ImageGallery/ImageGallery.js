@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import ImageGalleryItem from './ImageGalleryItem';
-import apiService from '../Service/Service';
+import apiService from '../../Service/Service';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import Loader from 'react-loader-spinner';
@@ -28,19 +28,6 @@ export default class ImageGallery extends Component {
       await this.loadMorePictures();
     }
   }
-  componentDidMount() {
-    window.addEventListener('keydown', this.onCloseModal);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onCloseModal);
-  }
-
-  onCloseModal = e => {
-    if (e.code === 'Escape' || e.currentTarget === e.target) {
-      this.setState({ isOpenModal: false });
-    }
-  };
 
   async loadNewPictures() {
     await apiService(this.props.imageName, this.state.page)
@@ -67,6 +54,11 @@ export default class ImageGallery extends Component {
   }
   onModalOpen = picture => {
     this.setState({ isOpenModal: true, picture: picture });
+  };
+  onCloseModal = e => {
+    if (e.code === 'Escape' || e.currentTarget === e.target) {
+      this.setState({ isOpenModal: false });
+    }
   };
 
   nextPage = () => {
